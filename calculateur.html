@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Rentabilite — Aesthetec</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #c4a265;
+            --accent-light: #d4b87a;
+            --accent-dark: #a68942;
+            --text: #2d2d3a;
+            --text-light: #6b6b7b;
+            --bg: #f5f4f1;
+            --bg-card: #ffffff;
+            --border: #e8e6e1;
+            --success: #2d8a4e;
+            --success-light: #e8f5ed;
+            --danger: #c0392b;
+            --danger-light: #fce8e6;
+            --info: #2980b9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .header .logo {
+            font-size: 12px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .header h1 span { color: var(--accent); }
+
+        .header p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .calculator-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .card-header {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .card-header p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .card-body { padding: 24px; }
+
+        .card.current .card-header .card-icon {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .card.projection .card-header .card-icon {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        /* ===== FORM FIELDS ===== */
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .field-group label .hint {
+            font-weight: 400;
+            color: var(--text-light);
+            font-size: 11px;
+        }
+
+        .field-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .field-row .field-group { flex: 1; }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--text);
+            background: #fafaf8;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(196,162,101,0.15);
+        }
+
+        .input-wrapper .unit {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .input-wrapper input.has-unit {
+            padding-right: 55px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--text);
+            background: #fafaf8;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%236b6b7b'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(196,162,101,0.15);
+        }
+
+        /* ===== MACHINE SELECTOR ===== */
+        .machine-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .machine-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .machine-option:hover {
+            border-color: var(--accent);
+            background: rgba(196,162,101,0.03);
+        }
+
+        .machine-option.selected {
+            border-color: var(--accent);
+            background: rgba(196,162,101,0.06);
+        }
+
+        .machine-option input[type="checkbox"] {
+            display: none;
+        }
+
+        .machine-check {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            font-size: 12px;
+            color: white;
+        }
+
+        .machine-option.selected .machine-check {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .machine-info { flex: 1; }
+
+        .machine-info .machine-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .machine-info .machine-desc {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .machine-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-dark);
+            flex-shrink: 0;
+        }
+
+        /* Machine params (shown when selected) */
+        .machine-params {
+            display: none;
+            padding: 12px 16px;
+            margin-top: -6px;
+            margin-bottom: 4px;
+            background: #f8f7f4;
+            border-radius: 0 0 10px 10px;
+            border: 1px solid var(--border);
+            border-top: none;
+        }
+
+        .machine-params.visible { display: block; }
+
+        .machine-params .field-row {
+            gap: 8px;
+        }
+
+        .machine-params label {
+            font-size: 11px;
+        }
+
+        .machine-params input {
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        /* ===== DIVIDER ===== */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 20px 0;
+        }
+
+        /* ===== RESULT CARDS ===== */
+        .results-section {
+            margin-bottom: 24px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .result-card .result-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .result-card .result-value {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .result-card .result-sub {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .result-card.highlight {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: var(--primary);
+        }
+
+        .result-card.highlight .result-label { color: rgba(255,255,255,0.6); }
+        .result-card.highlight .result-value { color: var(--accent); }
+        .result-card.highlight .result-sub { color: rgba(255,255,255,0.5); }
+
+        .result-card.success { border-color: var(--success); }
+        .result-card.success .result-value { color: var(--success); }
+
+        .result-card.danger { border-color: var(--danger); }
+        .result-card.danger .result-value { color: var(--danger); }
+
+        /* ===== COMPARISON BAR ===== */
+        .comparison-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .comparison-section h3 {
+            font-size: 18px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 24px;
+            color: var(--primary);
+        }
+
+        .comparison-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 16px;
+        }
+
+        .comparison-label {
+            width: 140px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        .comparison-bars {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar-label-sm {
+            width: 60px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 24px;
+            background: #f0ede8;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+        }
+
+        .bar-fill.current { background: var(--danger); }
+        .bar-fill.projected { background: var(--success); }
+
+        .bar-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
+
+        /* ===== GAIN BANNER ===== */
+        .gain-banner {
+            background: linear-gradient(135deg, var(--success), #1e7a3e);
+            color: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .gain-banner .gain-label {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .gain-banner .gain-value {
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .gain-banner .gain-sub {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        .gain-details {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .gain-detail {
+            text-align: center;
+        }
+
+        .gain-detail .gd-value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .gain-detail .gd-label {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        /* ===== ROI TIMELINE ===== */
+        .roi-timeline {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .roi-timeline h3 {
+            font-size: 18px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .roi-months {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+
+        .roi-month {
+            flex: 1;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .roi-month.negative { background: var(--danger); }
+        .roi-month.positive { background: var(--success); }
+        .roi-month.breakeven { background: var(--accent); }
+
+        .roi-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .roi-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .roi-legend .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .roi-legend .dot.neg { background: var(--danger); }
+        .roi-legend .dot.pos { background: var(--success); }
+        .roi-legend .dot.brk { background: var(--accent); }
+
+        /* ===== SHARE / PRINT ===== */
+        .actions-bar {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover { background: var(--secondary); }
+
+        .btn-outline {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover { border-color: var(--accent); }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover { background: var(--accent-dark); }
+
+        /* ===== PRINT ===== */
+        @media print {
+            body { background: white; }
+            .header { padding: 20px; }
+            .container { padding: 16px; }
+            .actions-bar { display: none; }
+            .card { break-inside: avoid; }
+            .comparison-section { break-inside: avoid; }
+            .gain-banner { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            .roi-month { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            .bar-fill { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            .result-card.highlight { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        }
+
+        /* ===== PROSPECT NAME ===== */
+        .prospect-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .prospect-bar label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .prospect-bar input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            color: var(--primary);
+        }
+
+        .prospect-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .prospect-bar select {
+            width: auto;
+            padding: 8px 32px 8px 12px;
+        }
+
+        /* ===== FINANCING SECTION ===== */
+        .financing-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .financing-row .field-group { flex: 1; }
+
+        /* ===== HIDDEN INITIALLY ===== */
+        .results-wrapper {
+            display: none;
+        }
+
+        .results-wrapper.visible {
+            display: block;
+        }
+
+        .calculate-btn-wrapper {
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .btn-calculate {
+            padding: 16px 48px;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(196,162,101,0.3);
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196,162,101,0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">Aesthetec</div>
+    <h1>Calculateur de <span>Rentabilite</span></h1>
+    <p>Outil commercial — Diagnostic financier & projection avec technologies Aesthetec</p>
+</div>
+
+<div class="container">
+
+    <!-- Prospect info -->
+    <div class="prospect-bar">
+        <label>Prospect :</label>
+        <input type="text" id="prospectName" placeholder="Nom / Institut">
+        <select id="prospectType">
+            <option value="estheticienne">Estheticienne</option>
+            <option value="infirmiere">Infirmiere</option>
+            <option value="medecin">Medecin</option>
+        </select>
+    </div>
+
+    <div class="calculator-grid">
+
+        <!-- ===== COLONNE GAUCHE : SITUATION ACTUELLE ===== -->
+        <div class="card current">
+            <div class="card-header">
+                <div class="card-icon">&#128200;</div>
+                <div>
+                    <h2>Situation actuelle</h2>
+                    <p>Diagnostic de l'activite aujourd'hui</p>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label>Heures travaillees <span class="hint">/ semaine</span></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="currentHours" value="40" class="has-unit" min="1">
+                            <span class="unit">h/sem</span>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label>Jours travailles <span class="hint">/ semaine</span></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="currentDays" value="5" class="has-unit" min="1" max="7">
+                            <span class="unit">j/sem</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Chiffre d'affaires mensuel HT <span class="hint">(approximatif)</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="currentCA" value="4000" class="has-unit" min="0" step="100">
+                        <span class="unit">euros</span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Charges mensuelles <span class="hint">(loyer, charges, produits, etc.)</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="currentCharges" value="1500" class="has-unit" min="0" step="100">
+                        <span class="unit">euros</span>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label>Panier moyen <span class="hint">/ cliente</span></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="currentTicket" value="55" class="has-unit" min="0">
+                            <span class="unit">euros</span>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label>Clientes <span class="hint">/ semaine</span></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="currentClients" value="18" class="has-unit" min="0">
+                            <span class="unit">/ sem</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Duree moyenne d'un soin <span class="hint">(minutes)</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="currentDuration" value="60" class="has-unit" min="10" step="5">
+                        <span class="unit">min</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="field-group">
+                    <label>Technologie(s) actuelle(s)</label>
+                    <select id="currentTech">
+                        <option value="aucune">Aucune technologie</option>
+                        <option value="quelques">Quelques technologies (RF, LED, etc.)</option>
+                        <option value="laser_autre">Laser d'un autre fournisseur</option>
+                        <option value="cryo_autre">Cryo d'un autre fournisseur</option>
+                        <option value="plusieurs">Plusieurs technologies concurrentes</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>CA genere par les technos actuelles <span class="hint">/ mois</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="currentTechCA" value="0" class="has-unit" min="0" step="100">
+                        <span class="unit">euros</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== COLONNE DROITE : PROJECTION AESTHETEC ===== -->
+        <div class="card projection">
+            <div class="card-header">
+                <div class="card-icon">&#127775;</div>
+                <div>
+                    <h2>Projection avec Aesthetec</h2>
+                    <p>Simulation du CA additionnel avec nos technologies</p>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="field-group">
+                    <label>Technologies Aesthetec envisagees</label>
+                </div>
+
+                <div class="machine-selector">
+                    <!-- LASER -->
+                    <div class="machine-option" onclick="toggleMachine(this, 'laser')">
+                        <input type="checkbox" id="machLaser">
+                        <div class="machine-check">&#10003;</div>
+                        <div class="machine-info">
+                            <div class="machine-name">Laser V19</div>
+                            <div class="machine-desc">Epilation laser diode 3 longueurs d'onde — Certifie MDR</div>
+                        </div>
+                        <div class="machine-price">33 000 euros</div>
+                    </div>
+                    <div class="machine-params" id="params-laser">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Prix moyen seance</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="laserPrice" value="85" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Seances / semaine</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="laserSessions" value="12" class="has-unit" min="0">
+                                    <span class="unit">/ sem</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Consommable / seance</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="laserConso" value="2" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CRIO -->
+                    <div class="machine-option" onclick="toggleMachine(this, 'crio')">
+                        <input type="checkbox" id="machCrio">
+                        <div class="machine-check">&#10003;</div>
+                        <div class="machine-info">
+                            <div class="machine-name">CRIO (7D CryoSculpting)</div>
+                            <div class="machine-desc">Cryolipolyse — Etude clinique en cours</div>
+                        </div>
+                        <div class="machine-price">27 900 euros</div>
+                    </div>
+                    <div class="machine-params" id="params-crio">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Prix moyen seance</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="crioPrice" value="180" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Seances / semaine</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="crioSessions" value="5" class="has-unit" min="0">
+                                    <span class="unit">/ sem</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Consommable / seance</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="crioConso" value="5" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HYDRALIFT -->
+                    <div class="machine-option" onclick="toggleMachine(this, 'hydra')">
+                        <input type="checkbox" id="machHydra">
+                        <div class="machine-check">&#10003;</div>
+                        <div class="machine-info">
+                            <div class="machine-name">Hydra Lift</div>
+                            <div class="machine-desc">Hydradermabrasion multi-soin visage</div>
+                        </div>
+                        <div class="machine-price">12 000 euros</div>
+                    </div>
+                    <div class="machine-params" id="params-hydra">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Prix moyen seance</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="hydraPrice" value="90" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Seances / semaine</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="hydraSessions" value="8" class="has-unit" min="0">
+                                    <span class="unit">/ sem</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Consommable / seance</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="hydraConso" value="8" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LED -->
+                    <div class="machine-option" onclick="toggleMachine(this, 'led')">
+                        <input type="checkbox" id="machLed">
+                        <div class="machine-check">&#10003;</div>
+                        <div class="machine-info">
+                            <div class="machine-name">Pack LED (Dome + Masques)</div>
+                            <div class="machine-desc">Dome LED LUM + Masques NEO pour revente</div>
+                        </div>
+                        <div class="machine-price">2 500 euros</div>
+                    </div>
+                    <div class="machine-params" id="params-led">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Supplement / soin (boost LED)</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="ledBoost" value="10" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Soins avec LED / semaine</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="ledSessions" value="15" class="has-unit" min="0">
+                                    <span class="unit">/ sem</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Masques revendus / mois</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="ledMasks" value="3" class="has-unit" min="0">
+                                    <span class="unit">/ mois</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="field-group">
+                    <label>Mode de financement</label>
+                    <select id="financing" onchange="updateFinancing()">
+                        <option value="pret5">Pret bancaire professionnel — 5 ans</option>
+                        <option value="pret4">Pret bancaire professionnel — 4 ans</option>
+                        <option value="pret3">Pret bancaire professionnel — 3 ans</option>
+                        <option value="comptant">Achat comptant</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Remise appliquee <span class="hint">(ex: IFL -10%)</span></label>
+                    <select id="discount">
+                        <option value="0">Aucune remise</option>
+                        <option value="10">IFL -10%</option>
+                        <option value="5">Remise -5%</option>
+                        <option value="15">Remise -15%</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CALCULATE BUTTON -->
+    <div class="calculate-btn-wrapper">
+        <button class="btn-calculate" onclick="calculate()">Calculer la rentabilite</button>
+    </div>
+
+    <!-- ===== RÉSULTATS ===== -->
+    <div class="results-wrapper" id="resultsWrapper">
+
+        <!-- KPI Cards -->
+        <div class="results-grid">
+            <div class="result-card danger">
+                <div class="result-label">Taux horaire actuel net</div>
+                <div class="result-value" id="kpiCurrentHourly">—</div>
+                <div class="result-sub">apres charges</div>
+            </div>
+            <div class="result-card success">
+                <div class="result-label">Taux horaire projete</div>
+                <div class="result-value" id="kpiProjectedHourly">—</div>
+                <div class="result-sub">avec Aesthetec</div>
+            </div>
+            <div class="result-card highlight">
+                <div class="result-label">CA additionnel / mois</div>
+                <div class="result-value" id="kpiAdditionalCA">—</div>
+                <div class="result-sub">genere par les technos</div>
+            </div>
+            <div class="result-card highlight">
+                <div class="result-label">Rentabilisation</div>
+                <div class="result-value" id="kpiROI">—</div>
+                <div class="result-sub">mois</div>
+            </div>
+        </div>
+
+        <!-- Gain Banner -->
+        <div class="gain-banner" id="gainBanner">
+            <div class="gain-label">Benefice net supplementaire par mois</div>
+            <div class="gain-value" id="gainValue">—</div>
+            <div class="gain-sub" id="gainSub">—</div>
+            <div class="gain-details">
+                <div class="gain-detail">
+                    <div class="gd-value" id="gainAnnual">—</div>
+                    <div class="gd-label">gain annuel</div>
+                </div>
+                <div class="gain-detail">
+                    <div class="gd-value" id="gainInvest">—</div>
+                    <div class="gd-label">investissement total</div>
+                </div>
+                <div class="gain-detail">
+                    <div class="gd-value" id="gainMensualite">—</div>
+                    <div class="gd-label">mensualite pret</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison bars -->
+        <div class="comparison-section">
+            <h3>Avant / Apres — Comparaison</h3>
+
+            <div class="comparison-row">
+                <div class="comparison-label">CA mensuel</div>
+                <div class="comparison-bars">
+                    <div class="bar-container">
+                        <div class="bar-label-sm">Avant</div>
+                        <div class="bar-track"><div class="bar-fill current" id="barCACurrent"><span class="bar-value"></span></div></div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-label-sm">Apres</div>
+                        <div class="bar-track"><div class="bar-fill projected" id="barCAProjected"><span class="bar-value"></span></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-row">
+                <div class="comparison-label">Benefice net / mois</div>
+                <div class="comparison-bars">
+                    <div class="bar-container">
+                        <div class="bar-label-sm">Avant</div>
+                        <div class="bar-track"><div class="bar-fill current" id="barNetCurrent"><span class="bar-value"></span></div></div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-label-sm">Apres</div>
+                        <div class="bar-track"><div class="bar-fill projected" id="barNetProjected"><span class="bar-value"></span></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-row">
+                <div class="comparison-label">Taux horaire net</div>
+                <div class="comparison-bars">
+                    <div class="bar-container">
+                        <div class="bar-label-sm">Avant</div>
+                        <div class="bar-track"><div class="bar-fill current" id="barHourlyCurrent"><span class="bar-value"></span></div></div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-label-sm">Apres</div>
+                        <div class="bar-track"><div class="bar-fill projected" id="barHourlyProjected"><span class="bar-value"></span></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Timeline -->
+        <div class="roi-timeline">
+            <h3>Timeline de rentabilisation</h3>
+            <div class="roi-months" id="roiMonths"></div>
+            <div class="roi-legend">
+                <span><span class="dot neg"></span> Investissement non couvert</span>
+                <span><span class="dot brk"></span> Point mort</span>
+                <span><span class="dot pos"></span> Rentabilise</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions-bar">
+            <button class="btn btn-primary" onclick="window.print()">&#128424; Imprimer / PDF</button>
+            <button class="btn btn-outline" onclick="resetCalc()">&#8634; Reinitialiser</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    // Machine prices
+    const machinePrices = {
+        laser: 33000,
+        crio: 27900,
+        hydra: 12000,
+        led: 2500
+    };
+
+    // Toggle machine selection
+    function toggleMachine(el, machine) {
+        el.classList.toggle('selected');
+        const cb = el.querySelector('input[type="checkbox"]');
+        cb.checked = !cb.checked;
+        const params = document.getElementById('params-' + machine);
+        params.classList.toggle('visible');
+    }
+
+    function updateFinancing() {}
+
+    function getVal(id) {
+        return parseFloat(document.getElementById(id).value) || 0;
+    }
+
+    function fmt(n) {
+        return Math.round(n).toLocaleString('fr-FR');
+    }
+
+    function calculate() {
+        // === CURRENT SITUATION ===
+        const currentHours = getVal('currentHours');
+        const currentDays = getVal('currentDays');
+        const currentCA = getVal('currentCA');
+        const currentCharges = getVal('currentCharges');
+        const currentTicket = getVal('currentTicket');
+        const currentClients = getVal('currentClients');
+        const currentDuration = getVal('currentDuration');
+        const currentTechCA = getVal('currentTechCA');
+
+        const currentNet = currentCA - currentCharges;
+        const currentMonthlyHours = currentHours * 4.33;
+        const currentHourlyNet = currentMonthlyHours > 0 ? currentNet / currentMonthlyHours : 0;
+
+        // === PROJECTION ===
+        const discount = getVal('discount') / 100;
+        const financing = document.getElementById('financing').value;
+
+        let totalInvestment = 0;
+        let monthlyTechCA = 0;
+        let monthlyConso = 0;
+
+        // Laser
+        if (document.getElementById('machLaser').checked) {
+            totalInvestment += machinePrices.laser;
+            const sessions = getVal('laserSessions') * 4.33;
+            monthlyTechCA += getVal('laserPrice') * sessions;
+            monthlyConso += getVal('laserConso') * sessions;
+        }
+
+        // CRIO
+        if (document.getElementById('machCrio').checked) {
+            totalInvestment += machinePrices.crio;
+            const sessions = getVal('crioSessions') * 4.33;
+            monthlyTechCA += getVal('crioPrice') * sessions;
+            monthlyConso += getVal('crioConso') * sessions;
+        }
+
+        // Hydra
+        if (document.getElementById('machHydra').checked) {
+            totalInvestment += machinePrices.hydra;
+            const sessions = getVal('hydraSessions') * 4.33;
+            monthlyTechCA += getVal('hydraPrice') * sessions;
+            monthlyConso += getVal('hydraConso') * sessions;
+        }
+
+        // LED
+        if (document.getElementById('machLed').checked) {
+            totalInvestment += machinePrices.led;
+            const boostCA = getVal('ledBoost') * getVal('ledSessions') * 4.33;
+            const masksCA = getVal('ledMasks') * 450; // avg resale price
+            monthlyTechCA += boostCA + masksCA;
+        }
+
+        // Apply discount
+        totalInvestment = totalInvestment * (1 - discount);
+
+        // Monthly loan payment
+        let mensualite = 0;
+        let loanMonths = 60;
+        const annualRate = 0.045; // 4.5% avg
+
+        if (financing === 'comptant') {
+            mensualite = 0;
+            loanMonths = 0;
+        } else {
+            if (financing === 'pret3') loanMonths = 36;
+            else if (financing === 'pret4') loanMonths = 48;
+            else loanMonths = 60;
+
+            const monthlyRate = annualRate / 12;
+            if (totalInvestment > 0) {
+                mensualite = totalInvestment * (monthlyRate * Math.pow(1 + monthlyRate, loanMonths)) / (Math.pow(1 + monthlyRate, loanMonths) - 1);
+            }
+        }
+
+        // Net additional profit per month
+        const monthlyTechNet = monthlyTechCA - monthlyConso - mensualite;
+
+        // Projected totals
+        const projectedCA = currentCA + monthlyTechCA;
+        const projectedCharges = currentCharges + monthlyConso + mensualite;
+        const projectedNet = projectedCA - projectedCharges;
+        const projectedHourlyNet = currentMonthlyHours > 0 ? projectedNet / currentMonthlyHours : 0;
+
+        // ROI months
+        const monthlyNetGain = monthlyTechCA - monthlyConso;
+        const roiMonths = monthlyNetGain > 0 ? Math.ceil(totalInvestment / monthlyNetGain) : 99;
+
+        // === UPDATE UI ===
+
+        // Show results
+        document.getElementById('resultsWrapper').classList.add('visible');
+
+        // KPIs
+        document.getElementById('kpiCurrentHourly').textContent = fmt(currentHourlyNet) + ' euros';
+        document.getElementById('kpiProjectedHourly').textContent = fmt(projectedHourlyNet) + ' euros';
+        document.getElementById('kpiAdditionalCA').textContent = '+' + fmt(monthlyTechCA) + ' euros';
+        document.getElementById('kpiROI').textContent = roiMonths <= 24 ? roiMonths + ' mois' : '24+ mois';
+
+        // Gain banner
+        document.getElementById('gainValue').textContent = '+' + fmt(monthlyTechNet) + ' euros';
+        document.getElementById('gainSub').textContent = 'apres deduction des mensualites de pret et consommables';
+        document.getElementById('gainAnnual').textContent = '+' + fmt(monthlyTechNet * 12) + ' euros';
+        document.getElementById('gainInvest').textContent = fmt(totalInvestment) + ' euros';
+        document.getElementById('gainMensualite').textContent = mensualite > 0 ? fmt(mensualite) + ' euros/mois' : 'Comptant';
+
+        // Comparison bars
+        const maxCA = Math.max(projectedCA, currentCA) * 1.1;
+        const maxNet = Math.max(projectedNet, currentNet) * 1.1;
+        const maxHourly = Math.max(projectedHourlyNet, currentHourlyNet) * 1.1;
+
+        setBar('barCACurrent', currentCA, maxCA, fmt(currentCA) + ' euros');
+        setBar('barCAProjected', projectedCA, maxCA, fmt(projectedCA) + ' euros');
+        setBar('barNetCurrent', Math.max(0, currentNet), Math.max(maxNet, 1), fmt(currentNet) + ' euros');
+        setBar('barNetProjected', Math.max(0, projectedNet), Math.max(maxNet, 1), fmt(projectedNet) + ' euros');
+        setBar('barHourlyCurrent', Math.max(0, currentHourlyNet), Math.max(maxHourly, 1), fmt(currentHourlyNet) + ' euros/h');
+        setBar('barHourlyProjected', Math.max(0, projectedHourlyNet), Math.max(maxHourly, 1), fmt(projectedHourlyNet) + ' euros/h');
+
+        // ROI Timeline (18 months)
+        const roiContainer = document.getElementById('roiMonths');
+        roiContainer.innerHTML = '';
+        const displayMonths = Math.min(Math.max(roiMonths + 6, 12), 24);
+
+        for (let i = 1; i <= displayMonths; i++) {
+            const div = document.createElement('div');
+            div.className = 'roi-month';
+            if (i < roiMonths) {
+                div.classList.add('negative');
+            } else if (i === roiMonths) {
+                div.classList.add('breakeven');
+            } else {
+                div.classList.add('positive');
+            }
+            div.textContent = 'M' + i;
+            roiContainer.appendChild(div);
+        }
+
+        // Scroll to results
+        document.getElementById('resultsWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function setBar(id, value, max, label) {
+        const el = document.getElementById(id);
+        const pct = max > 0 ? Math.max((value / max) * 100, 8) : 8;
+        el.style.width = pct + '%';
+        el.querySelector('.bar-value').textContent = label;
+    }
+
+    function resetCalc() {
+        document.getElementById('resultsWrapper').classList.remove('visible');
+        // Deselect all machines
+        document.querySelectorAll('.machine-option.selected').forEach(el => {
+            el.classList.remove('selected');
+            el.querySelector('input[type="checkbox"]').checked = false;
+        });
+        document.querySelectorAll('.machine-params.visible').forEach(el => {
+            el.classList.remove('visible');
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
