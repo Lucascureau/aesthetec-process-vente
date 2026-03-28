@@ -294,16 +294,45 @@
         /* Machine params (shown when selected) */
         .machine-params {
             display: none;
-            padding: 12px 16px;
-            margin-top: -6px;
-            margin-bottom: 4px;
-            background: #f8f7f4;
+            padding: 16px;
+            margin: -2px 0 10px 0;
+            background: #f7f6fa;
             border-radius: 0 0 10px 10px;
             border: 1px solid var(--border);
             border-top: none;
         }
 
         .machine-params.visible { display: block; }
+
+        .machine-params .discount-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .machine-params .discount-row label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .machine-params .discount-row select {
+            padding: 6px 28px 6px 10px;
+            font-size: 12px;
+            flex: 1;
+            max-width: 160px;
+        }
+
+        .machine-params .discount-row .discounted-price {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-dark);
+            margin-left: auto;
+        }
 
         .machine-params .field-row {
             gap: 8px;
@@ -889,6 +918,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="discount-row">
+                            <label>Remise :</label>
+                            <select id="discountLaser" onchange="updateDiscountedPrice('laser', 33000)">
+                                <option value="0">0%</option>
+                                <option value="5">-5%</option>
+                                <option value="10">-10%</option>
+                                <option value="15">-15%</option>
+                                <option value="20">-20%</option>
+                                <option value="25">-25%</option>
+                            </select>
+                            <span class="discounted-price" id="discPrice-laser">33 000 euros</span>
+                        </div>
                     </div>
 
                     <!-- CRIO -->
@@ -924,6 +965,18 @@
                                     <span class="unit">euros</span>
                                 </div>
                             </div>
+                        </div>
+                        <div class="discount-row">
+                            <label>Remise :</label>
+                            <select id="discountCrio" onchange="updateDiscountedPrice('crio', 27900)">
+                                <option value="0">0%</option>
+                                <option value="5">-5%</option>
+                                <option value="10">-10%</option>
+                                <option value="15">-15%</option>
+                                <option value="20">-20%</option>
+                                <option value="25">-25%</option>
+                            </select>
+                            <span class="discounted-price" id="discPrice-crio">27 900 euros</span>
                         </div>
                     </div>
 
@@ -961,41 +1014,106 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="discount-row">
+                            <label>Remise :</label>
+                            <select id="discountHydra" onchange="updateDiscountedPrice('hydra', 12000)">
+                                <option value="0">0%</option>
+                                <option value="5">-5%</option>
+                                <option value="10">-10%</option>
+                                <option value="15">-15%</option>
+                                <option value="20">-20%</option>
+                                <option value="25">-25%</option>
+                            </select>
+                            <span class="discounted-price" id="discPrice-hydra">12 000 euros</span>
+                        </div>
                     </div>
 
-                    <!-- LED -->
-                    <div class="machine-option" onclick="toggleMachine(this, 'led')">
-                        <input type="checkbox" id="machLed">
+                    <!-- DOME LED -->
+                    <div class="machine-option" onclick="toggleMachine(this, 'dome')">
+                        <input type="checkbox" id="machDome">
                         <div class="machine-check">&#10003;</div>
                         <div class="machine-info">
-                            <div class="machine-name">Pack LED (Dome + Masques)</div>
-                            <div class="machine-desc">Dome LED LUM + Masques NEO pour revente</div>
+                            <div class="machine-name">Dome LED LUM</div>
+                            <div class="machine-desc">LED therapie corps — boost soin en cabine</div>
                         </div>
-                        <div class="machine-price">2 500 euros</div>
+                        <div class="machine-price">997 euros</div>
                     </div>
-                    <div class="machine-params" id="params-led">
+                    <div class="machine-params" id="params-dome">
                         <div class="field-row">
                             <div class="field-group">
                                 <label>Supplement / soin (boost LED)</label>
                                 <div class="input-wrapper">
-                                    <input type="number" id="ledBoost" value="10" class="has-unit" min="0">
+                                    <input type="number" id="domeBoost" value="10" class="has-unit" min="0">
                                     <span class="unit">euros</span>
                                 </div>
                             </div>
                             <div class="field-group">
-                                <label>Soins avec LED / semaine</label>
+                                <label>Soins avec dome / semaine</label>
                                 <div class="input-wrapper">
-                                    <input type="number" id="ledSessions" value="15" class="has-unit" min="0">
+                                    <input type="number" id="domeSessions" value="15" class="has-unit" min="0">
                                     <span class="unit">/ sem</span>
                                 </div>
                             </div>
+                        </div>
+                        <div class="discount-row">
+                            <label>Remise :</label>
+                            <select id="discountDome" onchange="updateDiscountedPrice('dome', 997)">
+                                <option value="0">0%</option>
+                                <option value="5">-5%</option>
+                                <option value="10">-10%</option>
+                                <option value="15">-15%</option>
+                                <option value="20">-20%</option>
+                                <option value="25">-25%</option>
+                            </select>
+                            <span class="discounted-price" id="discPrice-dome">997 euros</span>
+                        </div>
+                    </div>
+
+                    <!-- MASQUE LED -->
+                    <div class="machine-option" onclick="toggleMachine(this, 'masque')">
+                        <input type="checkbox" id="machMasque">
+                        <div class="machine-check">&#10003;</div>
+                        <div class="machine-info">
+                            <div class="machine-name">Masque LED NEO</div>
+                            <div class="machine-desc">LED therapie visage — revente aux clientes</div>
+                        </div>
+                        <div class="machine-price">497 euros</div>
+                    </div>
+                    <div class="machine-params" id="params-masque">
+                        <div class="field-row">
                             <div class="field-group">
-                                <label>Masques revendus / mois</label>
+                                <label>Nombre de masques achetes</label>
                                 <div class="input-wrapper">
-                                    <input type="number" id="ledMasks" value="3" class="has-unit" min="0">
+                                    <input type="number" id="masqueQty" value="10" class="has-unit" min="1">
+                                    <span class="unit">unites</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Prix de revente / masque</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="masqueResale" value="450" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Masques vendus / mois</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="masqueSold" value="3" class="has-unit" min="0">
                                     <span class="unit">/ mois</span>
                                 </div>
                             </div>
+                        </div>
+                        <div class="discount-row">
+                            <label>Remise :</label>
+                            <select id="discountMasque" onchange="updateDiscountedPrice('masque', 497)">
+                                <option value="0">0%</option>
+                                <option value="5">-5%</option>
+                                <option value="10">-10%</option>
+                                <option value="15">-15%</option>
+                                <option value="20">-20%</option>
+                                <option value="25">-25%</option>
+                            </select>
+                            <span class="discounted-price" id="discPrice-masque">497 euros/u</span>
                         </div>
                     </div>
                 </div>
@@ -1004,21 +1122,11 @@
 
                 <div class="field-group">
                     <label>Mode de financement</label>
-                    <select id="financing" onchange="updateFinancing()">
+                    <select id="financing">
                         <option value="pret5">Pret bancaire professionnel — 5 ans</option>
                         <option value="pret4">Pret bancaire professionnel — 4 ans</option>
                         <option value="pret3">Pret bancaire professionnel — 3 ans</option>
                         <option value="comptant">Achat comptant</option>
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label>Remise appliquee <span class="hint">(ex: IFL -10%)</span></label>
-                    <select id="discount">
-                        <option value="0">Aucune remise</option>
-                        <option value="10">IFL -10%</option>
-                        <option value="5">Remise -5%</option>
-                        <option value="15">Remise -15%</option>
                     </select>
                 </div>
 
@@ -1149,12 +1257,13 @@
 </div>
 
 <script>
-    // Machine prices
+    // Machine base prices
     const machinePrices = {
         laser: 33000,
         crio: 27900,
         hydra: 12000,
-        led: 2500
+        dome: 997,
+        masque: 497
     };
 
     // Toggle machine selection
@@ -1166,14 +1275,27 @@
         params.classList.toggle('visible');
     }
 
-    function updateFinancing() {}
+    // Update discounted price display
+    function updateDiscountedPrice(machine, basePrice) {
+        const disc = getVal('discount' + machine.charAt(0).toUpperCase() + machine.slice(1)) / 100;
+        const final = basePrice * (1 - disc);
+        const suffix = machine === 'masque' ? '/u' : '';
+        document.getElementById('discPrice-' + machine).textContent = fmt(final) + ' euros' + suffix;
+    }
 
     function getVal(id) {
-        return parseFloat(document.getElementById(id).value) || 0;
+        const el = document.getElementById(id);
+        return el ? (parseFloat(el.value) || 0) : 0;
     }
 
     function fmt(n) {
         return Math.round(n).toLocaleString('fr-FR');
+    }
+
+    function getDiscountedPrice(machine) {
+        const key = 'discount' + machine.charAt(0).toUpperCase() + machine.slice(1);
+        const disc = getVal(key) / 100;
+        return machinePrices[machine] * (1 - disc);
     }
 
     function calculate() {
@@ -1192,7 +1314,6 @@
         const currentHourlyNet = currentMonthlyHours > 0 ? currentNet / currentMonthlyHours : 0;
 
         // === PROJECTION ===
-        const discount = getVal('discount') / 100;
         const financing = document.getElementById('financing').value;
 
         let totalInvestment = 0;
@@ -1201,7 +1322,7 @@
 
         // Laser
         if (document.getElementById('machLaser').checked) {
-            totalInvestment += machinePrices.laser;
+            totalInvestment += getDiscountedPrice('laser');
             const sessions = getVal('laserSessions') * 4.33;
             monthlyTechCA += getVal('laserPrice') * sessions;
             monthlyConso += getVal('laserConso') * sessions;
@@ -1209,7 +1330,7 @@
 
         // CRIO
         if (document.getElementById('machCrio').checked) {
-            totalInvestment += machinePrices.crio;
+            totalInvestment += getDiscountedPrice('crio');
             const sessions = getVal('crioSessions') * 4.33;
             monthlyTechCA += getVal('crioPrice') * sessions;
             monthlyConso += getVal('crioConso') * sessions;
@@ -1217,22 +1338,26 @@
 
         // Hydra
         if (document.getElementById('machHydra').checked) {
-            totalInvestment += machinePrices.hydra;
+            totalInvestment += getDiscountedPrice('hydra');
             const sessions = getVal('hydraSessions') * 4.33;
             monthlyTechCA += getVal('hydraPrice') * sessions;
             monthlyConso += getVal('hydraConso') * sessions;
         }
 
-        // LED
-        if (document.getElementById('machLed').checked) {
-            totalInvestment += machinePrices.led;
-            const boostCA = getVal('ledBoost') * getVal('ledSessions') * 4.33;
-            const masksCA = getVal('ledMasks') * 450; // avg resale price
-            monthlyTechCA += boostCA + masksCA;
+        // Dome LED
+        if (document.getElementById('machDome').checked) {
+            totalInvestment += getDiscountedPrice('dome');
+            const boostCA = getVal('domeBoost') * getVal('domeSessions') * 4.33;
+            monthlyTechCA += boostCA;
         }
 
-        // Apply discount
-        totalInvestment = totalInvestment * (1 - discount);
+        // Masque LED
+        if (document.getElementById('machMasque').checked) {
+            const qty = getVal('masqueQty');
+            totalInvestment += getDiscountedPrice('masque') * qty;
+            const resaleCA = getVal('masqueSold') * getVal('masqueResale');
+            monthlyTechCA += resaleCA;
+        }
 
         // Monthly loan payment
         let mensualite = 0;
@@ -1335,6 +1460,13 @@
         });
         document.querySelectorAll('.machine-params.visible').forEach(el => {
             el.classList.remove('visible');
+        });
+        // Reset discount selects and prices
+        Object.keys(machinePrices).forEach(m => {
+            const sel = document.getElementById('discount' + m.charAt(0).toUpperCase() + m.slice(1));
+            if (sel) sel.value = '0';
+            const lbl = document.getElementById('discPrice-' + m);
+            if (lbl) lbl.textContent = machinePrices[m] + ' euros';
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
