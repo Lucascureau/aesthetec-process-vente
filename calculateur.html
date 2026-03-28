@@ -206,8 +206,10 @@
             font-family: 'Inter', sans-serif;
             font-weight: 500;
             color: var(--text);
-            background: #fafaf8;
+            background-color: #ffffff;
             cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%236b6b7b'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
@@ -218,6 +220,12 @@
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(107,91,154,0.15);
+        }
+
+        select option {
+            background-color: #ffffff;
+            color: var(--text);
+            padding: 8px 12px;
         }
 
         /* ===== MACHINE SELECTOR ===== */
@@ -1120,14 +1128,30 @@
 
                 <div class="divider"></div>
 
-                <div class="field-group">
-                    <label>Mode de financement</label>
-                    <select id="financing">
-                        <option value="pret5">Pret bancaire professionnel — 5 ans</option>
-                        <option value="pret4">Pret bancaire professionnel — 4 ans</option>
-                        <option value="pret3">Pret bancaire professionnel — 3 ans</option>
-                        <option value="comptant">Achat comptant</option>
-                    </select>
+                <div class="field-row">
+                    <div class="field-group">
+                        <label>Mode de financement</label>
+                        <select id="financing" onchange="toggleInterestRate()">
+                            <option value="pret5">Pret bancaire — 5 ans</option>
+                            <option value="pret4">Pret bancaire — 4 ans</option>
+                            <option value="pret3">Pret bancaire — 3 ans</option>
+                            <option value="comptant">Achat comptant</option>
+                        </select>
+                    </div>
+                    <div class="field-group" id="interestRateGroup">
+                        <label>Taux d'interet annuel</label>
+                        <select id="interestRate">
+                            <option value="2">2%</option>
+                            <option value="3">3%</option>
+                            <option value="3.5">3,5%</option>
+                            <option value="4">4%</option>
+                            <option value="4.5" selected>4,5%</option>
+                            <option value="5">5%</option>
+                            <option value="5.5">5,5%</option>
+                            <option value="6">6%</option>
+                            <option value="7">7%</option>
+                        </select>
+                    </div>
                 </div>
 
             </div>
@@ -1267,6 +1291,11 @@
     };
 
     // Toggle machine selection
+    function toggleInterestRate() {
+        const fin = document.getElementById('financing').value;
+        document.getElementById('interestRateGroup').style.display = fin === 'comptant' ? 'none' : '';
+    }
+
     function toggleMachine(el, machine) {
         el.classList.toggle('selected');
         const cb = el.querySelector('input[type="checkbox"]');
@@ -1362,7 +1391,7 @@
         // Monthly loan payment
         let mensualite = 0;
         let loanMonths = 60;
-        const annualRate = 0.045; // 4.5% avg
+        const annualRate = parseFloat(document.getElementById('interestRate').value) / 100;
 
         if (financing === 'comptant') {
             mensualite = 0;
