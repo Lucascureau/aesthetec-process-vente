@@ -5,30 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculateur de Rentabilite — Aesthetec</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         :root {
-            --primary: #1a1a2e;
-            --secondary: #16213e;
-            --accent: #c4a265;
-            --accent-light: #d4b87a;
-            --accent-dark: #a68942;
-            --text: #2d2d3a;
+            --primary: #101010;
+            --secondary: #1a1a1a;
+            --accent: #4d65ff;
+            --accent-light: #6b7fff;
+            --accent-dark: #3a4ecc;
+            --text: #101010;
             --text-light: #6b6b7b;
-            --bg: #f5f4f1;
+            --bg: #f5f5f7;
             --bg-card: #ffffff;
-            --border: #e8e6e1;
+            --border: #e5e5ea;
             --success: #2d8a4e;
             --success-light: #e8f5ed;
             --danger: #c0392b;
             --danger-light: #fce8e6;
-            --info: #2980b9;
+            --info: #4d65ff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Archivo', 'Inter', -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
@@ -37,7 +37,7 @@
 
         /* ===== HEADER ===== */
         .header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #101010, #1a1a1a, #252525);
             color: white;
             padding: 32px 24px;
             text-align: center;
@@ -179,7 +179,7 @@
         .input-wrapper input:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(196,162,101,0.15);
+            box-shadow: 0 0 0 3px rgba(77,101,255,0.15);
         }
 
         .input-wrapper .unit {
@@ -217,7 +217,7 @@
         select:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(196,162,101,0.15);
+            box-shadow: 0 0 0 3px rgba(77,101,255,0.15);
         }
 
         /* ===== MACHINE SELECTOR ===== */
@@ -241,12 +241,12 @@
 
         .machine-option:hover {
             border-color: var(--accent);
-            background: rgba(196,162,101,0.03);
+            background: rgba(77,101,255,0.03);
         }
 
         .machine-option.selected {
             border-color: var(--accent);
-            background: rgba(196,162,101,0.06);
+            background: rgba(77,101,255,0.06);
         }
 
         .machine-option input[type="checkbox"] {
@@ -714,12 +714,12 @@
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px rgba(196,162,101,0.3);
+            box-shadow: 0 4px 15px rgba(77,101,255,0.3);
         }
 
         .btn-calculate:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(196,162,101,0.4);
+            box-shadow: 0 6px 20px rgba(77,101,255,0.4);
         }
     </style>
 </head>
