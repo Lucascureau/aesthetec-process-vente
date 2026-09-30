@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculateur de Rentabilite — Aesthetec</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -758,6 +759,28 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(107,91,154,0.4);
         }
+
+        /* CRM sync indicator */
+        .crm-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+        .crm-toast.visible { opacity: 1; transform: translateY(0); }
+        .crm-toast.success { background: var(--success); }
+        .crm-toast.error { background: var(--danger); }
+        .crm-toast.sending { background: var(--accent); }
     </style>
 </head>
 <body>
@@ -774,6 +797,8 @@
     <div class="prospect-bar">
         <label>Prospect :</label>
         <input type="text" id="prospectName" placeholder="Nom / Institut">
+        <label>Email :</label>
+        <input type="email" id="prospectEmail" placeholder="email@exemple.com" style="flex:1;">
         <select id="prospectType">
             <option value="estheticienne">Estheticienne</option>
             <option value="infirmiere">Infirmiere</option>
@@ -940,43 +965,43 @@
                         </div>
                     </div>
 
-                    <!-- CRIO -->
-                    <div class="machine-option" onclick="toggleMachine(this, 'crio')">
-                        <input type="checkbox" id="machCrio">
+                    <!-- CRYO -->
+                    <div class="machine-option" onclick="toggleMachine(this, 'cryo')">
+                        <input type="checkbox" id="machCryo">
                         <div class="machine-check">&#10003;</div>
                         <div class="machine-info">
-                            <div class="machine-name">CRIO (7D CryoSculpting)</div>
+                            <div class="machine-name">CRYO (7D CryoSculpting)</div>
                             <div class="machine-desc">Cryolipolyse — Etude clinique en cours</div>
                         </div>
                         <div class="machine-price">27 900 euros</div>
                     </div>
-                    <div class="machine-params" id="params-crio">
+                    <div class="machine-params" id="params-cryo">
                         <div class="field-row">
                             <div class="field-group">
                                 <label>Prix moyen seance</label>
                                 <div class="input-wrapper">
-                                    <input type="number" id="crioPrice" value="180" class="has-unit" min="0">
+                                    <input type="number" id="cryoPrice" value="180" class="has-unit" min="0">
                                     <span class="unit">euros</span>
                                 </div>
                             </div>
                             <div class="field-group">
                                 <label>Seances / semaine</label>
                                 <div class="input-wrapper">
-                                    <input type="number" id="crioSessions" value="5" class="has-unit" min="0">
+                                    <input type="number" id="cryoSessions" value="5" class="has-unit" min="0">
                                     <span class="unit">/ sem</span>
                                 </div>
                             </div>
                             <div class="field-group">
                                 <label>Consommable / seance</label>
                                 <div class="input-wrapper">
-                                    <input type="number" id="crioConso" value="5" class="has-unit" min="0">
+                                    <input type="number" id="cryoConso" value="5" class="has-unit" min="0">
                                     <span class="unit">euros</span>
                                 </div>
                             </div>
                         </div>
                         <div class="discount-row">
                             <label>Remise :</label>
-                            <select id="discountCrio" onchange="updateDiscountedPrice('crio', 27900)">
+                            <select id="discountCryo" onchange="updateDiscountedPrice('cryo', 27900)">
                                 <option value="0">0%</option>
                                 <option value="5">-5%</option>
                                 <option value="10">-10%</option>
@@ -984,7 +1009,55 @@
                                 <option value="20">-20%</option>
                                 <option value="25">-25%</option>
                             </select>
-                            <span class="discounted-price" id="discPrice-crio">27 900 euros</span>
+                            <span class="discounted-price" id="discPrice-cryo">27 900 euros</span>
+                        </div>
+                    </div>
+
+                    <!-- HIFU -->
+                    <div class="machine-option" onclick="toggleMachine(this, 'hifu')">
+                        <input type="checkbox" id="machHifu">
+                        <div class="machine-check">&#10003;</div>
+                        <div class="machine-info">
+                            <div class="machine-name">HIFU (Ultrasons focalises)</div>
+                            <div class="machine-desc">Lifting non invasif — validation medecin requise</div>
+                        </div>
+                        <div class="machine-price">15 000 euros</div>
+                    </div>
+                    <div class="machine-params" id="params-hifu">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Prix moyen seance</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="hifuPrice" value="540" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Seances / semaine</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="hifuSessions" value="2" class="has-unit" min="0">
+                                    <span class="unit">/ sem</span>
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Consommable / seance</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="hifuConso" value="50" class="has-unit" min="0">
+                                    <span class="unit">euros</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="discount-row">
+                            <label>Remise :</label>
+                            <select id="discountHifu" onchange="updateDiscountedPrice('hifu', 15000)">
+                                <option value="0">0%</option>
+                                <option value="5">-5%</option>
+                                <option value="10">-10%</option>
+                                <option value="15">-15%</option>
+                                <option value="20">-20%</option>
+                                <option value="25">-25%</option>
+                            </select>
+                            <span class="discounted-price" id="discPrice-hifu">15 000 euros</span>
                         </div>
                     </div>
 
@@ -1272,19 +1345,26 @@
 
         <!-- Actions -->
         <div class="actions-bar">
-            <button class="btn btn-primary" onclick="window.print()">&#128424; Imprimer / PDF</button>
+            <button class="btn btn-primary" onclick="downloadPDF()">&#128196; Telecharger le compte rendu PDF</button>
             <button class="btn btn-outline" onclick="resetCalc()">&#8634; Reinitialiser</button>
         </div>
 
     </div>
 
+<div class="crm-toast" id="crmToast"></div>
+
 </div>
 
 <script>
+    // ===== ZOHO CRM CONFIG =====
+    // Replace with your Cloudflare Worker URL after deployment
+    const ZOHO_WORKER_URL = 'https://aesthetec-zoho-lead.lccr-pro.workers.dev';
+
     // Machine base prices
     const machinePrices = {
         laser: 33000,
-        crio: 27900,
+        cryo: 27900,
+        hifu: 15000,
         hydra: 12000,
         dome: 997,
         masque: 497
@@ -1318,7 +1398,7 @@
     }
 
     function fmt(n) {
-        return Math.round(n).toLocaleString('fr-FR');
+        return Math.round(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ');
     }
 
     function getDiscountedPrice(machine) {
@@ -1357,12 +1437,20 @@
             monthlyConso += getVal('laserConso') * sessions;
         }
 
-        // CRIO
-        if (document.getElementById('machCrio').checked) {
-            totalInvestment += getDiscountedPrice('crio');
-            const sessions = getVal('crioSessions') * 4.33;
-            monthlyTechCA += getVal('crioPrice') * sessions;
-            monthlyConso += getVal('crioConso') * sessions;
+        // CRYO
+        if (document.getElementById('machCryo').checked) {
+            totalInvestment += getDiscountedPrice('cryo');
+            const sessions = getVal('cryoSessions') * 4.33;
+            monthlyTechCA += getVal('cryoPrice') * sessions;
+            monthlyConso += getVal('cryoConso') * sessions;
+        }
+
+        // HIFU
+        if (document.getElementById('machHifu').checked) {
+            totalInvestment += getDiscountedPrice('hifu');
+            const sessions = getVal('hifuSessions') * 4.33;
+            monthlyTechCA += getVal('hifuPrice') * sessions;
+            monthlyConso += getVal('hifuConso') * sessions;
         }
 
         // Hydra
@@ -1471,6 +1559,16 @@
 
         // Scroll to results
         document.getElementById('resultsWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Send to Zoho CRM
+        sendToZoho({
+            currentHours, currentDays, currentCA, currentCharges,
+            currentTicket, currentClients, currentDuration, currentTechCA,
+            currentNet, currentHourlyNet,
+            totalInvestment, monthlyTechCA, monthlyConso, mensualite,
+            monthlyTechNet, projectedCA, projectedNet, projectedHourlyNet, roiMonths,
+            financing, annualRate
+        });
     }
 
     function setBar(id, value, max, label) {
@@ -1478,6 +1576,434 @@
         const pct = max > 0 ? Math.max((value / max) * 100, 8) : 8;
         el.style.width = pct + '%';
         el.querySelector('.bar-value').textContent = label;
+    }
+
+    function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const W = 210;
+        const pageH = 297;
+        const margin = 20;
+        const contentW = W - margin * 2;
+        const bottomLimit = pageH - 25;
+        let y = 0;
+
+        // Colors
+        const primary = [28, 28, 66];
+        const accent = [139, 123, 181];
+        const success = [45, 138, 78];
+        const danger = [192, 57, 43];
+        const textLight = [107, 107, 133];
+        const white = [255, 255, 255];
+
+        // Format number with manual space separator (avoids encoding issues with jsPDF)
+        function fmtPdf(n) {
+            const num = Math.round(n);
+            const str = Math.abs(num).toString();
+            let result = '';
+            for (let i = str.length - 1, count = 0; i >= 0; i--, count++) {
+                if (count > 0 && count % 3 === 0) result = ' ' + result;
+                result = str[i] + result;
+            }
+            return num < 0 ? '-' + result : result;
+        }
+
+        function ensureSpace(needed) {
+            if (y + needed > bottomLimit) {
+                doc.addPage();
+                y = 20;
+            }
+        }
+
+        function drawFooter() {
+            const fy = pageH - 15;
+            doc.setDrawColor(200, 200, 220);
+            doc.setLineWidth(0.3);
+            doc.line(margin, fy, W - margin, fy);
+            doc.setTextColor(...textLight);
+            doc.setFontSize(7);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Ce document est une simulation indicative. Les resultats reels dependent des conditions d\'exploitation.', W / 2, fy + 5, { align: 'center' });
+            doc.text('Aesthetec - www.aesthetec.com - ' + today, W / 2, fy + 9, { align: 'center' });
+        }
+
+        // === HEADER ===
+        doc.setFillColor(...primary);
+        doc.rect(0, 0, W, 45, 'F');
+        doc.setFillColor(...accent);
+        doc.rect(0, 42, W, 3, 'F');
+
+        doc.setTextColor(...white);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text('AESTHETEC', W / 2, 14, { align: 'center' });
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Compte Rendu de Rentabilite', W / 2, 26, { align: 'center' });
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        doc.text('Simulation generee le ' + today, W / 2, 35, { align: 'center' });
+
+        y = 55;
+
+        // Helper functions
+        function sectionTitle(title) {
+            ensureSpace(14);
+            doc.setFillColor(...primary);
+            doc.roundedRect(margin, y, contentW, 9, 2, 2, 'F');
+            doc.setTextColor(...white);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text(title, margin + 5, y + 6.5);
+            y += 14;
+        }
+
+        function addRow(label, value, options = {}) {
+            ensureSpace(9);
+            const rowH = 7;
+            if (options.bg) {
+                doc.setFillColor(...options.bg);
+                doc.rect(margin, y - 1, contentW, rowH, 'F');
+            }
+            doc.setTextColor(...(options.labelColor || textLight));
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.text(label, margin + 3, y + 4);
+            doc.setTextColor(...(options.valueColor || primary));
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text(String(value), W - margin - 3, y + 4, { align: 'right' });
+            y += rowH + 1;
+        }
+
+        function addSpacer(h) { y += (h || 5); }
+
+        // Gather current values
+        const currentCA = getVal('currentCA');
+        const currentCharges = getVal('currentCharges');
+        const currentNet = currentCA - currentCharges;
+        const currentHours = getVal('currentHours');
+        const currentMonthlyHours = currentHours * 4.33;
+        const currentHourlyNet = currentMonthlyHours > 0 ? currentNet / currentMonthlyHours : 0;
+        const currentDays = getVal('currentDays');
+        const currentTicket = getVal('currentTicket');
+        const currentClients = getVal('currentClients');
+        const currentDuration = getVal('currentDuration');
+
+        // === SITUATION ACTUELLE ===
+        sectionTitle('Situation Actuelle');
+        addRow('Chiffre d\'affaires mensuel HT', fmtPdf(currentCA) + ' E');
+        addRow('Charges mensuelles', fmtPdf(currentCharges) + ' E');
+        addRow('Benefice net mensuel', fmtPdf(currentNet) + ' E', { valueColor: currentNet >= 0 ? success : danger });
+        addRow('Heures / semaine', currentHours + ' h');
+        addRow('Jours / semaine', currentDays + ' j');
+        addRow('Panier moyen', fmtPdf(currentTicket) + ' E');
+        addRow('Clientes / semaine', currentClients);
+        addRow('Duree moyenne soin', currentDuration + ' min');
+        addRow('Taux horaire net', fmtPdf(currentHourlyNet) + ' E/h', { valueColor: danger, bg: [252, 232, 230] });
+
+        addSpacer(6);
+
+        // === MACHINES SELECTIONNEES ===
+        sectionTitle('Technologies Aesthetec Selectionnees');
+
+        const machines = [
+            { id: 'laser', name: 'Laser V19', priceId: 'laserPrice', sessionsId: 'laserSessions', consoId: 'laserConso', base: 33000 },
+            { id: 'cryo', name: 'CRYO (7D CryoSculpting)', priceId: 'cryoPrice', sessionsId: 'cryoSessions', consoId: 'cryoConso', base: 27900 },
+            { id: 'hifu', name: 'HIFU (Ultrasons focalises)', priceId: 'hifuPrice', sessionsId: 'hifuSessions', consoId: 'hifuConso', base: 15000 },
+            { id: 'hydra', name: 'Hydra Lift', priceId: 'hydraPrice', sessionsId: 'hydraSessions', consoId: 'hydraConso', base: 12000 },
+            { id: 'dome', name: 'Dome LED LUM', base: 997 },
+            { id: 'masque', name: 'Masque LED NEO', base: 497 }
+        ];
+
+        let totalInvestment = 0;
+        let monthlyTechCA = 0;
+        let monthlyConso = 0;
+        let anyMachine = false;
+
+        machines.forEach(m => {
+            const cb = document.getElementById('mach' + m.id.charAt(0).toUpperCase() + m.id.slice(1));
+            if (!cb || !cb.checked) return;
+            anyMachine = true;
+            const discPrice = getDiscountedPrice(m.id);
+
+            if (m.id === 'masque') {
+                const qty = getVal('masqueQty');
+                const invest = discPrice * qty;
+                totalInvestment += invest;
+                const resaleCA = getVal('masqueSold') * getVal('masqueResale');
+                monthlyTechCA += resaleCA;
+                addRow(m.name + ' (x' + qty + ')', fmtPdf(invest) + ' E');
+                addRow('   Revente : ' + getVal('masqueSold') + ' masques/mois a ' + fmtPdf(getVal('masqueResale')) + ' E', '+' + fmtPdf(resaleCA) + ' E/mois', { valueColor: success });
+            } else if (m.id === 'dome') {
+                totalInvestment += discPrice;
+                const boostCA = getVal('domeBoost') * getVal('domeSessions') * 4.33;
+                monthlyTechCA += boostCA;
+                addRow(m.name, fmtPdf(discPrice) + ' E');
+                addRow('   Boost : ' + getVal('domeSessions') + ' soins/sem a +' + fmtPdf(getVal('domeBoost')) + ' E', '+' + fmtPdf(boostCA) + ' E/mois', { valueColor: success });
+            } else {
+                totalInvestment += discPrice;
+                const sessions = getVal(m.sessionsId) * 4.33;
+                const ca = getVal(m.priceId) * sessions;
+                const conso = getVal(m.consoId) * sessions;
+                monthlyTechCA += ca;
+                monthlyConso += conso;
+                addRow(m.name, fmtPdf(discPrice) + ' E');
+                addRow('   ' + fmtPdf(getVal(m.sessionsId)) + ' seances/sem a ' + fmtPdf(getVal(m.priceId)) + ' E', '+' + fmtPdf(ca) + ' E/mois', { valueColor: success });
+                if (conso > 0) addRow('   Consommables', '-' + fmtPdf(conso) + ' E/mois', { valueColor: danger });
+            }
+        });
+
+        if (!anyMachine) {
+            doc.setTextColor(...textLight);
+            doc.setFontSize(9);
+            doc.text('Aucune technologie selectionnee', margin + 3, y + 4);
+            y += 8;
+        }
+
+        addSpacer(4);
+
+        // Financing
+        const financing = document.getElementById('financing').value;
+        let loanMonths = 60;
+        let mensualite = 0;
+        const annualRate = parseFloat(document.getElementById('interestRate').value) / 100;
+
+        if (financing !== 'comptant') {
+            if (financing === 'pret3') loanMonths = 36;
+            else if (financing === 'pret4') loanMonths = 48;
+            else loanMonths = 60;
+            const monthlyRate = annualRate / 12;
+            if (totalInvestment > 0) {
+                mensualite = totalInvestment * (monthlyRate * Math.pow(1 + monthlyRate, loanMonths)) / (Math.pow(1 + monthlyRate, loanMonths) - 1);
+            }
+        }
+
+        addRow('Investissement total', fmtPdf(totalInvestment) + ' E', { bg: [245, 243, 250] });
+        if (financing === 'comptant') {
+            addRow('Financement', 'Achat comptant');
+        } else {
+            const years = loanMonths / 12;
+            addRow('Financement', 'Pret ' + years + ' ans a ' + (annualRate * 100) + '%');
+            addRow('Mensualite de pret', fmtPdf(mensualite) + ' E/mois', { valueColor: danger });
+        }
+
+        addSpacer(8);
+
+        // === RESULTATS ===
+        // Reserve space for entire results block to avoid splitting
+        ensureSpace(107);
+        sectionTitle('Resultats de la Projection');
+
+        const projectedCA = currentCA + monthlyTechCA;
+        const projectedCharges = currentCharges + monthlyConso + mensualite;
+        const projectedNet = projectedCA - projectedCharges;
+        const projectedHourlyNet = currentMonthlyHours > 0 ? projectedNet / currentMonthlyHours : 0;
+        const monthlyTechNet = monthlyTechCA - monthlyConso - mensualite;
+        const monthlyNetGain = monthlyTechCA - monthlyConso;
+        const roiMonths = monthlyNetGain > 0 ? Math.ceil(totalInvestment / monthlyNetGain) : 99;
+
+        // Comparison table header
+        doc.setFillColor(245, 243, 250);
+        doc.rect(margin, y - 1, contentW, 8, 'F');
+        doc.setTextColor(...textLight);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text('AVANT', margin + contentW * 0.5, y + 4);
+        doc.text('APRES', margin + contentW * 0.72, y + 4);
+        doc.text('EVOLUTION', margin + contentW - 3, y + 4, { align: 'right' });
+        y += 10;
+
+        function compRow(label, before, after, unit) {
+            ensureSpace(9);
+            const diff = after - before;
+            const sign = diff >= 0 ? '+' : '';
+            doc.setTextColor(...primary);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.text(label, margin + 3, y + 4);
+            doc.text(fmtPdf(before) + ' ' + unit, margin + contentW * 0.5, y + 4);
+            doc.setFont('helvetica', 'bold');
+            doc.text(fmtPdf(after) + ' ' + unit, margin + contentW * 0.72, y + 4);
+            doc.setTextColor(...(diff >= 0 ? success : danger));
+            doc.text(sign + fmtPdf(diff) + ' ' + unit, margin + contentW - 3, y + 4, { align: 'right' });
+            y += 8;
+        }
+
+        compRow('CA mensuel HT', currentCA, projectedCA, 'E');
+        compRow('Charges mensuelles', currentCharges, projectedCharges, 'E');
+        compRow('Benefice net / mois', currentNet, projectedNet, 'E');
+        compRow('Taux horaire net', currentHourlyNet, projectedHourlyNet, 'E/h');
+
+        addSpacer(6);
+
+        // Highlight box
+        ensureSpace(46);
+        doc.setFillColor(232, 245, 237);
+        doc.roundedRect(margin, y, contentW, 30, 3, 3, 'F');
+        doc.setDrawColor(...success);
+        doc.setLineWidth(0.5);
+        doc.roundedRect(margin, y, contentW, 30, 3, 3, 'S');
+
+        doc.setTextColor(...success);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Benefice net supplementaire / mois', W / 2, y + 8, { align: 'center' });
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text('+' + fmtPdf(monthlyTechNet) + ' E', W / 2, y + 19, { align: 'center' });
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text('soit +' + fmtPdf(monthlyTechNet * 12) + ' E / an apres deduction pret et consommables', W / 2, y + 26, { align: 'center' });
+        y += 36;
+
+        // ROI
+        addRow('Rentabilisation de l\'investissement', roiMonths <= 24 ? roiMonths + ' mois' : '24+ mois', { valueColor: success, bg: [232, 245, 237] });
+
+        // Footer on all pages
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let p = 1; p <= totalPages; p++) {
+            doc.setPage(p);
+            drawFooter();
+        }
+
+        // Download
+        const filename = 'Aesthetec_Rentabilite_' + new Date().toISOString().slice(0, 10) + '.pdf';
+        doc.save(filename);
+    }
+
+    // ===== ZOHO CRM SYNC =====
+    function showCrmToast(message, type) {
+        const toast = document.getElementById('crmToast');
+        toast.textContent = message;
+        toast.className = 'crm-toast ' + type + ' visible';
+        if (type !== 'sending') {
+            setTimeout(() => { toast.classList.remove('visible'); }, 4000);
+        }
+    }
+
+    async function sendToZoho(calc) {
+        showCrmToast('Envoi vers Zoho CRM...', 'sending');
+
+        // Collect selected machines
+        const machinesData = {};
+        if (document.getElementById('machLaser').checked) {
+            machinesData.laser = {
+                name: 'Laser V19',
+                investissement: Math.round(getDiscountedPrice('laser')),
+                prix_seance: getVal('laserPrice'),
+                seances_sem: getVal('laserSessions'),
+                consommable_seance: getVal('laserConso'),
+                remise: getVal('discountLaser') + '%'
+            };
+        }
+        if (document.getElementById('machCryo').checked) {
+            machinesData.cryo = {
+                name: 'CRYO 7D CryoSculpting',
+                investissement: Math.round(getDiscountedPrice('cryo')),
+                prix_seance: getVal('cryoPrice'),
+                seances_sem: getVal('cryoSessions'),
+                consommable_seance: getVal('cryoConso'),
+                remise: getVal('discountCryo') + '%'
+            };
+        }
+        if (document.getElementById('machHifu').checked) {
+            machinesData.hifu = {
+                name: 'HIFU (Ultrasons focalises)',
+                investissement: Math.round(getDiscountedPrice('hifu')),
+                prix_seance: getVal('hifuPrice'),
+                seances_sem: getVal('hifuSessions'),
+                consommable_seance: getVal('hifuConso'),
+                remise: getVal('discountHifu') + '%'
+            };
+        }
+        if (document.getElementById('machHydra').checked) {
+            machinesData.hydra = {
+                name: 'Hydra Lift',
+                investissement: Math.round(getDiscountedPrice('hydra')),
+                prix_seance: getVal('hydraPrice'),
+                seances_sem: getVal('hydraSessions'),
+                consommable_seance: getVal('hydraConso'),
+                remise: getVal('discountHydra') + '%'
+            };
+        }
+        if (document.getElementById('machDome').checked) {
+            machinesData.dome = {
+                name: 'Dome LED LUM',
+                investissement: Math.round(getDiscountedPrice('dome')),
+                boost_euro: getVal('domeBoost'),
+                soins_sem: getVal('domeSessions'),
+                remise: getVal('discountDome') + '%'
+            };
+        }
+        if (document.getElementById('machMasque').checked) {
+            machinesData.masque = {
+                name: 'Masque LED NEO',
+                investissement: Math.round(getDiscountedPrice('masque') * getVal('masqueQty')),
+                quantite: getVal('masqueQty'),
+                prix_revente: getVal('masqueResale'),
+                masques_mois: getVal('masqueSold'),
+                remise: getVal('discountMasque') + '%'
+            };
+        }
+
+        const financingLabels = {
+            comptant: 'Achat comptant',
+            pret3: 'Pret 3 ans',
+            pret4: 'Pret 4 ans',
+            pret5: 'Pret 5 ans'
+        };
+
+        const payload = {
+            prospect_name: document.getElementById('prospectName').value.trim(),
+            prospect_email: document.getElementById('prospectEmail').value.trim(),
+            prospect_type: document.getElementById('prospectType').value,
+            current_ca: Math.round(calc.currentCA),
+            current_charges: Math.round(calc.currentCharges),
+            current_net: Math.round(calc.currentNet),
+            current_hours: calc.currentHours,
+            current_days: calc.currentDays,
+            current_ticket: Math.round(calc.currentTicket),
+            current_clients: calc.currentClients,
+            current_duration: calc.currentDuration,
+            current_tech: document.getElementById('currentTech').value,
+            current_tech_ca: Math.round(calc.currentTechCA),
+            current_hourly_net: Math.round(calc.currentHourlyNet),
+            machines: machinesData,
+            total_investment: Math.round(calc.totalInvestment),
+            financing_mode: financingLabels[calc.financing] || calc.financing,
+            interest_rate: calc.annualRate * 100,
+            mensualite: Math.round(calc.mensualite),
+            monthly_tech_ca: Math.round(calc.monthlyTechCA),
+            monthly_conso: Math.round(calc.monthlyConso),
+            monthly_tech_net: Math.round(calc.monthlyTechNet),
+            annual_tech_net: Math.round(calc.monthlyTechNet * 12),
+            projected_ca: Math.round(calc.projectedCA),
+            projected_hourly_net: Math.round(calc.projectedHourlyNet),
+            roi_months: calc.roiMonths
+        };
+
+        try {
+            const res = await fetch(ZOHO_WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                const msg = data.action === 'updated'
+                    ? 'Prospect mis a jour dans Zoho CRM'
+                    : 'Nouveau prospect cree dans Zoho CRM';
+                showCrmToast(msg, 'success');
+            } else {
+                console.error('Zoho CRM error:', data);
+                showCrmToast('Erreur Zoho CRM — voir console', 'error');
+            }
+        } catch (err) {
+            console.error('Zoho CRM sync failed:', err);
+            showCrmToast('Connexion Zoho CRM echouee', 'error');
+        }
     }
 
     function resetCalc() {
